@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript name="PlayerHead" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+    <cues>
+        <cue name="Place_PlayerHead">
+            <conditions>
+                <event_cue_signalled comment="arugments passed with param" />
+            </conditions>
+            <actions>
+                <do_if value="event.name == 'event_cue_signalled'">
+                    <set_value name="$Arguments" exact="event.param"/>
+                </do_if>
+                <set_value name="$HQSector" exact="$Arguments.{1}"/>
+                <set_value name="$HQPosition" exact="$Arguments.{2}"/>
+
+                <create_station name="$HQ" macro="macro.station_pla_headquarters_base_01_macro" sector="$HQSector" constructionplan="'x4ep1_playerheadquarters'" owner="faction.player" state="componentstate.operational">
+                    <safepos value="$HQPosition"/>
+                </create_station>
+
+                <find_object_component name="$ResearchModule" macro="macro.landmarks_player_hq_01_research_macro" object="$HQ"/>
+                <set_object_name object="$ResearchModule" name="'{20104,101701}'" comment="Unknown module to Research Module"/>
+
+                <set_value name="player.entity.$x4ep1_hq_research_unlocked"/>
+                <find_station name="global.$Headquarters_TPWar" macro="macro.station_pla_headquarters_base_01_macro" space="$HQSector" owner="faction.player" />
+                <include_actions ref="SetupHQ"/>
+            </actions>
+        </cue>
+
+        <library name="SetupHQ">
+            <actions>
+                <do_if value="$HQ">
+
+                    <!-- <Patch base HQ construction plan components which are of state construction. Other construction components may have been added by the player.> -->
+                    <do_if value="$HQ.isconstruction">
+                        <debug_text text="'HQ was of state construction. Setting to operational.'" filter="savegame"/>
+                        <restore_object object="$HQ"/>
+                    </do_if>
+                    <find_object_component name="$Patch_ControlRoom" object="$HQ" checkoperational="false" class="class.controlroom"/>
+                    <do_if value="$Patch_ControlRoom.isconstruction">
+                        <debug_text text="'HQ controlroom was of state construction. Setting to operational.'" filter="savegame"/>
+                        <restore_object object="$Patch_ControlRoom"/>
+                    </do_if>
+                    <remove_value name="$Patch_ControlRoom"/>
+                    <find_object_component name="$Patch_ResearchModule" object="$HQ" checkoperational="false" macro="macro.landmarks_player_hq_01_research_macro"/>
+                    <do_if value="$Patch_ResearchModule and $Patch_ResearchModule.isconstruction">
+                        <debug_text text="'Research module was of state construction. Setting to operational.'" filter="savegame"/>
+                        <restore_object object="$Patch_ResearchModule"/>
+                    </do_if>
+                    <remove_value name="$Patch_ResearchModule"/>
+
+                    <do_if value="not $HQ.defencenpc">
+                        <create_cue_actor name="$DefenceComputer" cue="this">
+                        <select tags="controlpost.defence.tag"/>
+                        <owner exact="faction.player" />
+                        </create_cue_actor>
+                        <do_if value="$DefenceComputer">
+                        <assign_control_entity object="$HQ" actor="$DefenceComputer" post="controlpost.defence" transfer="true"/>
+                        <remove_cue_actor actor="$DefenceComputer" cue="this" />
+                        <remove_value name="$DefenceComputer" />
+                        </do_if>
+                    </do_if>
+
+                    <do_if value="not $HQ.engineer">
+                        <create_cue_actor name="$EngineerComputer" cue="this">
+                            <select tags="controlpost.engineer.tag"/>
+                            <owner exact="faction.player" />
+                        </create_cue_actor>
+                        <do_if value="$EngineerComputer">
+                            <assign_control_entity object="$HQ" actor="$EngineerComputer" post="controlpost.engineer" transfer="true"/>
+                            <remove_cue_actor actor="$EngineerComputer" cue="this" />
+                            <remove_value name="$EngineerComputer" />
+                        </do_if>
+                    </do_if>
+
+                    <do_if value="not $HQ.paidbuildplot.exists">
+                        <set_value name="$Patch__BuildPlot" exact="$HQ.buildplot.max"/>
+                        <set_build_plot object="$HQ" paid="true" x="$Patch__BuildPlot.x" y="$Patch__BuildPlot.y" z="$Patch__BuildPlot.z"/>
+                        <remove_value name="$Patch__BuildPlot"/>
+                    </do_if>
+                </do_if>
+            </actions>
+        </library>
+    </cues>
+</mdscript>
+

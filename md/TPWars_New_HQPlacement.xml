@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript name="PirateBaseHQ" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+    <cues>
+        <cue name="Place_PirateHead">
+            <conditions>
+              <event_cue_completed cue="md.Setup.GameStart"/>
+            </conditions>
+            <actions>
+				<find_sector groupname="$SectorGroup" space="player.galaxy" owner="faction.ownerless" multiple="true">
+					<match macro="macro.cluster_black2_sector01_macro" negate="true" />
+				</find_sector>
+                <do_any>
+                    <do_all>   
+                        <set_value name="$xvalue" min="300000" max="300000"/>
+                        <set_value name="$yvalue" min="-70000" max="70000"/>
+                        <set_value name="$zvalue" min="-300000" max="300000"/>
+                    </do_all>
+                    <do_all>
+                        <set_value name="$xvalue" min="-300000" max="-300000"/>
+                        <set_value name="$yvalue" min="-70000" max="70000"/>
+                        <set_value name="$zvalue" min="-300000" max="300000"/>
+                    </do_all>
+                </do_any>
+
+                <find_station name="$PirateHead" space="player.galaxy" owner="faction.ownerless" multiple="false" macro="macro.station_gen_piratebase_base_01_macro" />
+                <do_if value="not $PirateHead.exists">    
+					<create_position name="$PHeadPos" x="$xvalue" y="$yvalue" z="$zvalue" />
+                    <create_station name="$PirateHead" macro="macro.station_gen_piratebase_base_01_macro" sector="$SectorGroup.random" constructionplan="'gen_piratebase'" owner="faction.ownerless" >
+                        <safepos position="$PHeadPos" />
+                    </create_station>
+					<show_notification text="'Signal detected. Check logbook for location.'" sound="notification_warning" />
+					<write_to_logbook category="upkeep" title="'Unknown Signal'" text="'Strange signal found originating from ' + $PirateHead.sector.knownname" interaction="guidance" object="$PirateHead"/>
+                </do_if>
+                <add_to_group groupname="global.$PirateBase_TPWar" object="$PirateHead"/> 
+            </actions> 
+            <cues>
+                <cue name="Destroy_PirateHead" instantiate="true">
+                    <conditions>
+                        <check_all>
+                            <event_object_entered space="$PirateHead.zone" />
+                            <check_value value="event.param == player.ship"/>
+                        </check_all>
+                    </conditions>        
+                    <actions>
+                        <destroy_object object="$PirateHead" />
+                        <signal_cue_instantly cue="md.PlayerHead.Place_PlayerHead" param="[$PirateHead.sector, $PirateHead.zone.position]"/>
+                        <debug_text text="'building HQ in ' + $PirateHead.sector.knownname" chance="0" />
+						<show_notification text="'Station claimed as Headquarters'" />
+                    </actions>
+                </cue>
+            </cues>
+        </cue>
+    </cues>
+</mdscript>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<content id="playerfactiontag" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" version="100" date="2019-02-11" save="0">
+  <text language="7" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="33" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="34" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="39" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="44" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="49" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="86" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+  <text language="88" name="TEST MOVE PHQ" description="just testing cues. why do you have this?"  author="marksmango" />
+</content>
